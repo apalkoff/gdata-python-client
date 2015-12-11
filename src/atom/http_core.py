@@ -504,7 +504,7 @@ class HttpClient(object):
 def _send_data_part(data, connection):
   if isinstance(data, str):
     # I might want to just allow str, not unicode.
-    connection.send(data)
+    connection.send(bytes(data, 'UTF-8'))
     return
   # Check to see if data is a file-like object that has a read method.
   elif hasattr(data, 'read'):

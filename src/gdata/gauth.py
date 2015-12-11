@@ -1309,7 +1309,7 @@ class OAuth2Token(object):
     response = http_client.request(http_request)
     body = response.read()
     if response.status == 200:
-      self._extract_tokens(body)
+      self._extract_tokens(str(body, encoding='utf-8'))
       return self
     else:
       error_msg = 'Invalid response %s.' % response.status
