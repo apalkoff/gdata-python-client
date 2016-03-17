@@ -115,7 +115,7 @@ class HttpRequest(object):
       size: int Required if the data is a file like object. If the data is a
             string, the size is calculated so this parameter is ignored.
     """
-    if isinstance(data, str):
+    if isinstance(data, bytes):
       size = len(data)
     if size is None:
       # TODO: support chunked transfer if some of the body is of unknown size.
@@ -502,22 +502,22 @@ class HttpClient(object):
 
 
 def _send_data_part(data, connection):
-  if isinstance(data, str):
-    # I might want to just allow str, not unicode.
-    connection.send(bytes(data, 'UTF-8'))
-    return
   # Check to see if data is a file-like object that has a read method.
-  elif hasattr(data, 'read'):
+  if hasattr(data, 'read'):
     # Read the file and send it a chunk at a time.
     while 1:
       binarydata = data.read(100000)
       if binarydata == '': break
       connection.send(binarydata)
     return
+  elif isinstance(data, bytes):
+    # I might want to just allow str, not unicode.
+    connection.send(data)
+    return
   else:
     # The data object was not a file.
     # Try to convert to a string and send the data.
-    connection.send(str(data))
+    connection.send(str(data).encode())
     return
 
 
